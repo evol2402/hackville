@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Your Image - Mental Wellness</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #f1f6ff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Roboto', sans-serif;
+            color: #5e65fb;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .camera-container {
+            display: inline-block;
+            position: relative;
+            border: 6px solid #5e65fb;
+            border-radius: 50%;
+            overflow: hidden;
+            width: 350px;
+            height: 350px;
+            margin: 20px auto;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .camera-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .capture-btn {
+            background-color: #5e65fb;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .capture-btn:hover {
+            background-color: #4d56e5;
+            transform: scale(1.05);
+        }
+
+        .flash-messages {
+            margin: 10px auto;
+            width: 80%;
+            text-align: center;
+        }
+
+        .flash-messages .message {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .captured-image {
+            margin-top: 20px;
+            display: inline-block;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .captured-image img {
+            width: 350px;
+            border-radius: 10px;
+        }
+
+        .welcome-text {
+            font-size: 1.2rem;
+            color: #333;
+            margin-top: 20px;
+            font-weight: 400;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .instructions {
+            font-size: 1rem;
+            color: #5e65fb;
+            font-weight: 600;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .instructions ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .instructions i {
+            color: #5e65fb;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Capture Your Image and Let Your Smile Shine</h1>
+
+    <div class="welcome-text">
+        <p>Take a moment to focus on yourself. Capture your image and step into your wellness journey. Remember, your mental well-being matters!</p>
+    </div>
+
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="camera-container">
+        <img src="/video_feed" alt="Video Feed">
+    </div>
+
+    <form action="/capture" method="post">
+        <button class="capture-btn">Capture Image</button>
+    </form>
+
+
+
+</body>
+</html>

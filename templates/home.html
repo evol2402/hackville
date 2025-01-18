@@ -1,0 +1,293 @@
+{% include 'header.html' %}
+<body class="index-page">
+
+<!--<header-->
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+<!--         <img src="static/assets/img/logo.png" alt=""> -->
+        <h1 class="sitename">Serenify</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="#hero" class="active">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Facts</a></li>
+
+
+
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <div class="header-social-links">
+        <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section">
+
+      <div class="container d-flex flex-column justify-content-center align-items-center text-center position-relative" data-aos="zoom-out">
+        <img src="static/assets/img/hero-img.png" class="img-fluid animated" alt="">
+        <h1>Welcome to <span> Serenify </span></h1>
+        <p>empowering students to strengthen their mental health and achieve academic success with balance and clarity.</p>
+        <div class="d-flex">
+          <a href="{{url_for('shoot')}}" class="btn-get-started scrollto">Get Started</a>
+         </div>
+      </div>
+
+    </section><!-- /Hero Section -->
+
+    <!-- Clients Section -->
+    <section id="clients" class="clients section light-background">
+
+      <div class="container" data-aos="fade-up">
+
+        <div class="row gy-4">
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo" >
+            <img src="static/assets/img/clients/algoma_p.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="static/assets/img/clients/sheridan_p.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="static/assets/img/clients/uft_p.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="static/assets/img/clients/ufw_p.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="static/assets/img/clients/bu_p.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="static/assets/img/clients/ubc_p.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Clients Section -->
+
+<!-- About Section -->
+<section id="about" class="about section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>About</h2>
+    <p>Your companion for academic success and mental well-being</p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <!-- Left Content -->
+      <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="100">
+        <p>
+          Our app is designed to empower students in achieving their academic goals while prioritizing mental health. We understand the challenges of balancing rigorous studies and personal well-being.
+        </p>
+        <ul>
+          <li><i class="bi bi-check2-circle" aria-hidden="true"></i> <span>Provides tools to organize and track academic progress efficiently.</span></li>
+          <li><i class="bi bi-check2-circle" aria-hidden="true"></i> <span>Offers mindfulness exercises to alleviate stress and boost focus.</span></li>
+          <li><i class="bi bi-check2-circle" aria-hidden="true"></i> <span>Encourages a balanced approach to learning and self-care.</span></li>
+        </ul>
+      </div>
+
+      <!-- Right Content -->
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+        <p>
+          By integrating features such as personalized study plans and mental wellness resources, the app helps users stay motivated and productive. It bridges the gap between academic success and emotional resilience, fostering a healthier mindset.
+        </p>
+        <a href="#" class="read-more" aria-label="Read more about how the app supports you">
+          <span>Read More</span>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+    <!-- Features Section -->
+    <section id="features" class="features section">
+
+        <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+  <h2>Key Insights</h2>
+<p>Your trusted partner in achieving academic excellence while nurturing mental well-being.</p>
+
+  </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row gy-4 align-items-center features-item">
+          <div class="col-md-5 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="100">
+            <img src="static/assets/img/relax.svg" class="img-fluid" alt="">
+          </div>
+          <div class="col-md-7" data-aos="fade-up" data-aos-delay="100">
+  <h3>Enhance Your Mental Wellness Through Relaxation and Reading</h3>
+  <p class="fst-italic">
+    Discover the calming power of reading and relaxation techniques. Our app offers resources and exercises designed to help reduce stress, improve focus, and support emotional well-being.
+  </p>
+  <ul>
+    <li><i class="bi bi-check"></i><span> Guided reading sessions to soothe the mind and ease anxiety.</span></li>
+    <li><i class="bi bi-check"></i><span> Relaxation techniques to promote mindfulness and emotional balance.</span></li>
+    <li><i class="bi bi-check"></i><span> Personalized tips and resources tailored to your wellness journey.</span></li>
+  </ul>
+</div>
+
+        </div><!-- Features Item -->
+
+        <div class="row gy-4 align-items-center features-item">
+          <div class="col-md-5 order-1 order-md-2 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="static/assets/img/nature.svg"  style="height:60vh; " class="img-fluid" alt="">
+          </div>
+          <div class="col-md-7" data-aos="fade-up" data-aos-delay="100">
+  <h3>Reconnect with Nature for Mental Clarity and Well-being</h3>
+  <p class="fst-italic">
+    Embrace the calming benefits of nature through our guided experiences. Immerse yourself in natural environments that promote peace, relaxation, and emotional healing.
+  </p>
+  <ul>
+    <li><i class="bi bi-check"></i><span> Virtual nature walks to reduce stress and improve mental clarity.</span></li>
+    <li><i class="bi bi-check"></i><span> Guided breathing exercises inspired by nature’s rhythms.</span></li>
+    <li><i class="bi bi-check"></i><span> Soundscapes from nature to enhance focus, relaxation, and sleep.</span></li>
+  </ul>
+</div>
+
+        </div><!-- Features Item -->
+
+        <div class="row gy-4 align-items-center features-item">
+          <div class="col-md-5 d-flex align-items-center" data-aos="zoom-out">
+            <img src="static/assets/img/smiley.svg" class="img-fluid" alt="">
+          </div>
+          <div class="col-md-7" data-aos="fade-up" data-aos-delay="100">
+  <h3>Boost Your Mood with a Simple Smile</h3>
+  <p class="fst-italic">
+    Smiling can help reduce stress, improve your mood, and brighten your day. Discover the power of positive thinking and small joyful moments with our app.
+  </p>
+  <ul>
+    <li><i class="bi bi-check"></i><span> Quick smile exercises to boost happiness and positivity.</span></li>
+    <li><i class="bi bi-check"></i><span> Positive affirmation practices that support mental well-being.</span></li>
+    <li><i class="bi bi-check"></i><span> Fun challenges and activities to inspire genuine smiles.</span></li>
+  </ul>
+</div>
+
+        </div><!-- Features Item -->
+
+        <div class="row gy-4 align-items-center features-item">
+          <div class="col-md-5 order-1 order-md-2 d-flex align-items-center" data-aos="zoom-out">
+            <img src="static/assets/img/exercise.svg" class="img-fluid" alt="">
+          </div>
+          <div class="col-md-7" data-aos="fade-up" data-aos-delay="100">
+  <h3>Elevate Your Mental Health with Regular Exercise</h3>
+  <p class="fst-italic">
+    Physical activity is key to reducing stress, improving mood, and enhancing overall mental well-being. Our app provides tailored exercise routines to support both mind and body.
+  </p>
+  <ul>
+    <li><i class="bi bi-check"></i><span> Guided workouts for stress relief and mental clarity.</span></li>
+    <li><i class="bi bi-check"></i><span> Mind-body exercises such as yoga and Pilates to promote relaxation.</span></li>
+    <li><i class="bi bi-check"></i><span> Personalized fitness plans to improve mood, energy, and focus.</span></li>
+  </ul>
+</div>
+
+        </div><!-- Features Item -->
+
+      </div>
+
+    </section><!-- /Features Section -->
+
+
+   <!-- Faq Section -->
+<section id="faq" class="faq section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Frequently Asked Questions</h2>
+    <p>Get answers to your questions about achieving balance and well-being.</p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+
+    <div class="row justify-content-center">
+
+      <div class="col-lg-8">
+
+        <div class="faq-container">
+
+          <div class="faq-item faq-active" data-aos="fade-up" data-aos-delay="200">
+            <i class="faq-icon bi bi-question-circle"></i>
+            <h3>How can this app help improve my mental well-being?</h3>
+            <div class="faq-content">
+              <p>Our app provides tailored exercises, mindfulness practices, and relaxation techniques that support mental clarity and reduce stress, helping you cultivate a positive mindset.</p>
+            </div>
+            <i class="faq-toggle bi bi-chevron-right"></i>
+          </div><!-- End Faq item-->
+
+          <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
+            <i class="faq-icon bi bi-question-circle"></i>
+            <h3>What types of exercises can I do using the app?</h3>
+            <div class="faq-content">
+              <p>We offer a variety of exercises, including breathing techniques, guided meditations, yoga sequences, and mood-boosting challenges, all designed to promote relaxation and mental clarity.</p>
+            </div>
+            <i class="faq-toggle bi bi-chevron-right"></i>
+          </div><!-- End Faq item-->
+
+          <div class="faq-item" data-aos="fade-up" data-aos-delay="400">
+            <i class="faq-icon bi bi-question-circle"></i>
+            <h3>Are the relaxation techniques suitable for beginners?</h3>
+            <div class="faq-content">
+              <p>Yes! Our relaxation techniques are beginner-friendly, with simple steps that guide you toward creating moments of peace, whether you're new to mindfulness or have prior experience.</p>
+            </div>
+            <i class="faq-toggle bi bi-chevron-right"></i>
+          </div><!-- End Faq item-->
+
+          <div class="faq-item" data-aos="fade-up" data-aos-delay="500">
+            <i class="faq-icon bi bi-question-circle"></i>
+            <h3>Can I personalize my wellness journey in the app?</h3>
+            <div class="faq-content">
+              <p>Absolutely! The app allows you to personalize your wellness plan by choosing your focus areas, whether it's stress relief, focus enhancement, or overall emotional balance.</p>
+            </div>
+            <i class="faq-toggle bi bi-chevron-right"></i>
+          </div><!-- End Faq item-->
+
+          <div class="faq-item" data-aos="fade-up" data-aos-delay="600">
+            <i class="faq-icon bi bi-question-circle"></i>
+            <h3>How can I track my progress in the app?</h3>
+            <div class="faq-content">
+              <p>The app offers tools to track your mood, activities, and milestones, helping you stay motivated and see improvements over time, reinforcing a sense of accomplishment.</p>
+            </div>
+            <i class="faq-toggle bi bi-chevron-right"></i>
+          </div><!-- End Faq item-->
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section><!-- /Faq Section -->
+
+  </main>
+{% include 'footer.html' %}

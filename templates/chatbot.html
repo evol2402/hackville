@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Chatbot</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        #chat-box {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+        #chat-box h3 {
+            font-size: 24px;
+            color: #5e65fb;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05);
+        }
+        .user-message, .chatbot-message {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            max-width: 80%;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+        .user-message {
+            background-color: #5e65fb;
+            color: white;
+            align-self: flex-end;
+            border-top-left-radius: 0;
+        }
+        .chatbot-message {
+            background-color: #e2e4f3;
+            color: #333;
+            align-self: flex-start;
+            border-top-right-radius: 0;
+        }
+        input[type="text"] {
+            padding: 12px;
+            width: 75%;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #5e65fb;
+        }
+        button {
+            padding: 12px 20px;
+            width: 20%;
+            background-color: #5e65fb;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #4b53e1;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(2px);
+        }
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .input-container button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-box">
+        <h3>Wellness Chatbot</h3>
+        <div id="messages"></div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Ask me anything about wellness..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+        var socket = io();
+
+        function sendMessage() {
+            var userInput = document.getElementById('user-input').value;
+            if (userInput) {
+                var userMessage = document.createElement('div');
+                userMessage.classList.add('user-message');
+                userMessage.textContent = userInput;
+                document.getElementById('messages').appendChild(userMessage);
+                document.getElementById('user-input').value = '';
+
+                socket.emit('user_message', userInput);
+            }
+        }
+
+        socket.on('chatbot_response', function(response) {
+            var chatbotMessage = document.createElement('div');
+            chatbotMessage.classList.add('chatbot-message');
+            chatbotMessage.textContent = response;
+            document.getElementById('messages').appendChild(chatbotMessage);
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+        });
+    </script>
+</body>
+</html>
