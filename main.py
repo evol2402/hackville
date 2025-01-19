@@ -1,14 +1,14 @@
 from sqlite3 import IntegrityError
 import secrets
 from forms import ContactForm, LoginForm, RegistrationForm, GenderForm, ProfileForm,EditUserForm,DeleteUserForm,ForgotPasswordForm,OTPForm,ResetPasswordForm,ProductEditForm,DeleteProductForm,AddProductForm,AddCategoryForm,CategoryForm
-from flask import Flask, render_template, Response, request, redirect, flash, url_for, session, abort
+from flask import Flask, render_template, Response, request, redirect, flash, url_for, session, abort, jsonify, send_from_directory
 import cv2
 from dotenv import load_dotenv
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Text, DateTime, Boolean, Float, ForeignKey,JSON
-from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column, Session
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
@@ -21,20 +21,42 @@ from deepface import DeepFace
 from pprint import pprint
 from flask_socketio import SocketIO, emit
 import google.auth.transport.requests
-
-
-
-app = Flask(__name__)
-
+import google.generativeai as genai
 
 
 load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY",))
+# Create the model
+generation_config = {
+  "temperature": 1.2,
+  "top_p": 0.95,
+  "top_k": 40,
+  "max_output_tokens": 8192,
+  "response_mime_type": "text/plain",
+}
+
+model = genai.GenerativeModel(
+  model_name="gemini-1.5-flash",
+  generation_config=generation_config,
+  system_instruction="You are an empathetic and supportive mental health chatbot. Your role is to listen attentively to people who reach out, provide a safe space for them to express their emotions, and offer thoughtful, helpful responses. You should always approach conversations with care, showing understanding, kindness, and validation for the person's feelings. You can suggest resources or coping strategies when appropriate but should never offer medical advice. Your responses should be calming and non-judgmental, creating a space where individuals feel heard and supported at the end when the user says bye, give them 5 tips to improve and excel based on their chat with you.",
+)
+
+chat_session = model.start_chat(history=[])
+
+app = Flask(__name__)
+counter_variable = 1
+
+# Initialize the generative AI model
+
+
+
 
 # Google OAuth configuration
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # Allow HTTP traffic for local dev
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 REDIRECT_URI = os.environ.get("REDIRECT_URI", "http://127.0.0.1:5001/callback")
+
 
 # Initialize Google OAuth flow
 flow = Flow.from_client_config(
@@ -72,7 +94,7 @@ login_manager.login_view = 'login'
 @app.route("/test")
 def test():
     form = GenderForm()
-    return render_template('gender.html',form = form)
+    return render_template('chatbot_p.html',form = form)
 
 # Create a user_loader callback to reload the user from the user_id
 @login_manager.user_loader
@@ -116,7 +138,7 @@ class Report(Base):
     smiles_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     access_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     streak_counter: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    last_access_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    last_access_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
@@ -126,19 +148,45 @@ class Report(Base):
 # Create the database
 with app.app_context():
     db.create_all()
+
+
+
 @app.route('/')
 def home():
-    is_admin = current_user.is_authenticated and current_user.id == 1
-    first_name = current_user.first_name if current_user.is_authenticated else 'N/A'
-    last_name = current_user.last_name if current_user.is_authenticated else 'N/A'
+    global counter_variable
+    # Check if the user is authenticated
+    if current_user.is_authenticated:
+        # Fetch the latest report for the current user
+        latest_report = db.session.query(Report).filter(Report.user_id == current_user.id).order_by(
+            Report.created_at.desc()).first()
 
-    form = ContactForm()
-    return render_template('home.html',is_admin=is_admin,
-                           first_name=first_name,
-                           last_name=last_name,
-                           logged_in=current_user.is_authenticated,
-                           form = form
-                           )
+        # Get the streak counter from the latest report
+        user_streak = latest_report.streak_counter if latest_report else counter_variable
+
+        # Check if the user is an admin
+        is_admin = current_user.id == 1
+
+        # Get user details (first and last name)
+        first_name = current_user.first_name
+        last_name = current_user.last_name
+
+        # Prepare the contact form
+        form = ContactForm()
+
+        # Render the template with the necessary data
+        return render_template(
+            'home.html',
+            is_admin=is_admin,
+            first_name=first_name,
+            last_name=last_name,
+            logged_in=True,
+            form=form,
+            user_streak=user_streak
+        )
+
+    # If user is not authenticated, render the page with only public info
+    return render_template('home.html', logged_in=False, form=ContactForm())
+
 @app.route('/submit', methods=['POST'])
 def submit():
     form = ContactForm()
@@ -257,109 +305,154 @@ def profile():
 
     return render_template('profile.html', form=form, user=current_user)
 
+def increment_streak_by_user_id(user_id: int):
+    """
+    Increment the streak counter for a user based on their user ID.
 
-def otp_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # Check if OTP has been verified
-        if 'otp_verified' not in session or not session['otp_verified']:
-            flash('Please verify your OTP/email before resetting your password.', 'danger')
-            return redirect(url_for('otp'))  # Redirect to OTP verification page
-        return f(*args, **kwargs)
-    return decorated_function
+    :param user_id: The ID of the user whose streak counter should be incremented
+    """
+    try:
+        # Fetch the user by user_id
+        user = User.query.filter_by(id=user_id).first()
 
+        if not user:
+            print(f"No user found with ID: {user_id}")
+            return
 
-@app.route('/forgot_password', methods=['GET', 'POST'])
-def forgot_password():
-    if current_user.is_authenticated:
-        logout_user()
-        session.clear()
-    form = ForgotPasswordForm()
-    if form.validate_on_submit():
-        email = form.email.data
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            if check_password_hash(existing_user.password,'it was googled'):  # Assuming you have a field to check this
-                flash(
-                    'You cannot reset your password for this Google account. Try logging with Google.',
-                    'warning')
-                return redirect(url_for('login'))
+        # Access the user's report
+        report = user.reports[0] if user.reports else None
 
-            generated_OTP = rand_otp()
-            session['OTP'] = generated_OTP
-            message = (f"Dear {existing_user.first_name},\n"
-                       f"Your one-time password (OTP) is: {generated_OTP}\n"
-                       "Please use this code to complete your login or verification process. "
-                       "This OTP is valid for 10 minutes and can only be used once.\n"
-                       "If you did not request this code, please ignore this message.\n"
-                       "Thank you,\nGizmo")
-            subject = "Verification Code: Complete Your Login"
-            send_email(existing_user.first_name, "anirudh050504@gmail.com", subject, message)  # Send to user's email
-            flash('OTP sent successfully', 'success')
-            session['user_email'] = email  # Store email in session for later use
-            session['otp_timestamp'] = datetime.now().timestamp()
-            return redirect(url_for('otp'))
-        flash('Email not found in our system. Please register to create an account and log in.', 'danger')
-        return redirect(url_for('login'))
-    return render_template('forgot_password.html', form=form)
+        if not report:
+            print(f"No report found for user with ID: {user_id}")
+            return
 
-@app.route('/otp', methods=['GET', 'POST'])
-def otp():
-    if 'user_email' not in session:
-        flash('Please enter your registered email first.', 'danger')
-        return redirect(url_for('forgot_password'))
-    form = OTPForm()
-    if form.validate_on_submit():
-        otp_value = int(form.otp.data)
-        current_time = datetime.now().timestamp()
-        otp_timestamp = session.get('otp_timestamp', 0)
+        # Check the last access date
+        today = datetime.utcnow().date()
+        last_access = report.last_access_date.date()
 
-        if otp_value == int(session.get('OTP')) and (current_time - otp_timestamp < 600):  # Check if OTP is valid for 10 minutes
-            flash('OTP verified. You can now reset your password!', 'success')
-            session['otp_verified'] = True
-            return redirect(url_for('reset_password'))
-        flash('OTP is incorrect or expired', 'danger')
-        return redirect(url_for('otp'))
-    return render_template('otp.html', form=form)
-
-
-def rand_otp():
-    otp = [secrets.randbelow(10) for _ in range(6)]
-    return ''.join(map(str,otp))
-
-@app.route('/resend_otp', methods=['GET','POST'])
-def resend_otp():
-    if 'user_email' not in session:
-        flash('Please enter your registered email first.', 'danger')
-        return redirect(url_for('forgot_password'))
-
-    current_time = datetime.now().timestamp()
-    otp_timestamp = session.get('otp_timestamp', 0)
-
-    if current_time - otp_timestamp >= 120:  # Check if 2 minutes have passed since last OTP
-        generated_OTP = rand_otp()
-        session['OTP'] = generated_OTP  # Update OTP in session
-        email = session['user_email']
-        existing_user = User.query.filter_by(email=email).first()
-
-        if existing_user:
-            message = (f"Dear {existing_user.first_name},\n"
-                       f"Your new one-time password (OTP) is: {generated_OTP}\n"
-                       "Please use this code to complete your login or verification process. "
-                       "This OTP is valid for 10 minutes and can only be used once.\n"
-                       "If you did not request this code, please ignore this message.\n"
-                       "Thank you,\nGizmo")
-            subject = "Verification Code: Complete Your Login"
-            send_email(existing_user.first_name, "anirudh050504@gmail.com", subject, message)  # Send new OTP
-            session['otp_timestamp'] = current_time  # Update the OTP timestamp
-            flash('New OTP sent successfully', 'success')
+        if last_access == today:
+            # No change needed; the user already accessed today
+            print("Streak already updated for today.")
+        elif last_access == today - timedelta(days=1):
+            # Increment streak as the user is continuing their streak
+            report.streak_counter += 1
         else:
-            flash('Email not found in our system.', 'danger')
-    else:
-        remaining_time = 120 - (current_time - otp_timestamp)
-        flash(f'Please wait {int(remaining_time)} seconds before requesting a new OTP.', 'warning')
+            # Reset streak as there's a break in continuity
+            report.streak_counter = 1
 
-    return redirect(url_for('otp'))
+        # Update last access date to today
+        report.last_access_date = datetime.utcnow()
+
+        # Commit the changes
+        db.session.commit()
+        print(f"Streak counter updated to {report.streak_counter} for user ID {user_id}.")
+
+    except Exception as e:
+        print(f"Error updating streak counter: {e}")
+        db.session.rollback()
+
+# def otp_required(f):
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         # Check if OTP has been verified
+#         if 'otp_verified' not in session or not session['otp_verified']:
+#             flash('Please verify your OTP/email before resetting your password.', 'danger')
+#             return redirect(url_for('otp'))  # Redirect to OTP verification page
+#         return f(*args, **kwargs)
+#     return decorated_function
+#
+
+# @app.route('/forgot_password', methods=['GET', 'POST'])
+# def forgot_password():
+#     if current_user.is_authenticated:
+#         logout_user()
+#         session.clear()
+#     form = ForgotPasswordForm()
+#     if form.validate_on_submit():
+#         email = form.email.data
+#         existing_user = User.query.filter_by(email=email).first()
+#         if existing_user:
+#             if check_password_hash(existing_user.password,'it was googled'):  # Assuming you have a field to check this
+#                 flash(
+#                     'You cannot reset your password for this Google account. Try logging with Google.',
+#                     'warning')
+#                 return redirect(url_for('login'))
+#
+#             generated_OTP = rand_otp()
+#             session['OTP'] = generated_OTP
+#             message = (f"Dear {existing_user.first_name},\n"
+#                        f"Your one-time password (OTP) is: {generated_OTP}\n"
+#                        "Please use this code to complete your login or verification process. "
+#                        "This OTP is valid for 10 minutes and can only be used once.\n"
+#                        "If you did not request this code, please ignore this message.\n"
+#                        "Thank you,\nGizmo")
+#             subject = "Verification Code: Complete Your Login"
+#             send_email(existing_user.first_name, "anirudh050504@gmail.com", subject, message)  # Send to user's email
+#             flash('OTP sent successfully', 'success')
+#             session['user_email'] = email  # Store email in session for later use
+#             session['otp_timestamp'] = datetime.now().timestamp()
+#             return redirect(url_for('otp'))
+#         flash('Email not found in our system. Please register to create an account and log in.', 'danger')
+#         return redirect(url_for('login'))
+#     return render_template('forgot_password.html', form=form)
+
+# @app.route('/otp', methods=['GET', 'POST'])
+# def otp():
+#     if 'user_email' not in session:
+#         flash('Please enter your registered email first.', 'danger')
+#         return redirect(url_for('forgot_password'))
+#     form = OTPForm()
+#     if form.validate_on_submit():
+#         otp_value = int(form.otp.data)
+#         current_time = datetime.now().timestamp()
+#         otp_timestamp = session.get('otp_timestamp', 0)
+#
+#         if otp_value == int(session.get('OTP')) and (current_time - otp_timestamp < 600):  # Check if OTP is valid for 10 minutes
+#             flash('OTP verified. You can now reset your password!', 'success')
+#             session['otp_verified'] = True
+#             return redirect(url_for('reset_password'))
+#         flash('OTP is incorrect or expired', 'danger')
+#         return redirect(url_for('otp'))
+#     return render_template('otp.html', form=form)
+
+
+# def rand_otp():
+#     otp = [secrets.randbelow(10) for _ in range(6)]
+#     return ''.join(map(str,otp))
+
+# @app.route('/resend_otp', methods=['GET','POST'])
+# def resend_otp():
+#     if 'user_email' not in session:
+#         flash('Please enter your registered email first.', 'danger')
+#         return redirect(url_for('forgot_password'))
+#
+#     current_time = datetime.now().timestamp()
+#     otp_timestamp = session.get('otp_timestamp', 0)
+#
+#     if current_time - otp_timestamp >= 120:  # Check if 2 minutes have passed since last OTP
+#         generated_OTP = rand_otp()
+#         session['OTP'] = generated_OTP  # Update OTP in session
+#         email = session['user_email']
+#         existing_user = User.query.filter_by(email=email).first()
+#
+#         if existing_user:
+#             message = (f"Dear {existing_user.first_name},\n"
+#                        f"Your new one-time password (OTP) is: {generated_OTP}\n"
+#                        "Please use this code to complete your login or verification process. "
+#                        "This OTP is valid for 10 minutes and can only be used once.\n"
+#                        "If you did not request this code, please ignore this message.\n"
+#                        "Thank you,\nGizmo")
+#             subject = "Verification Code: Complete Your Login"
+#             send_email(existing_user.first_name, "anirudh050504@gmail.com", subject, message)  # Send new OTP
+#             session['otp_timestamp'] = current_time  # Update the OTP timestamp
+#             flash('New OTP sent successfully', 'success')
+#         else:
+#             flash('Email not found in our system.', 'danger')
+#     else:
+#         remaining_time = 120 - (current_time - otp_timestamp)
+#         flash(f'Please wait {int(remaining_time)} seconds before requesting a new OTP.', 'warning')
+#
+#     return redirect(url_for('otp'))
 
 
 
@@ -509,8 +602,42 @@ def video_feed():
 def shoot():
     return render_template('index.html')
 
+
+# Assuming this function is called when the user performs an action
+def update_user_report(db_session: Session):
+    # Retrieve the current user's report
+    report = db_session.query(Report).filter_by(user_id=current_user.id).first()
+
+    if report:
+        # Example action: Increment smiles_count, access_count, or streak_counter
+        report.smiles_count += 1  # Increment smiles count for example
+        report.access_count += 1  # Increment access count
+
+        # Update streak if needed, example condition: increment streak counter
+        if report.last_access_date.date() != datetime.utcnow().date():
+            report.streak_counter += 1
+
+        # Update last access date
+        report.last_access_date = datetime.utcnow()
+
+        # Commit the changes
+        db_session.commit()
+    else:
+        # If no report exists, create a new one
+        new_report = Report(
+            user_id=current_user.id,
+            smiles_count=1,  # Set initial value
+            access_count=1,  # Set initial value
+            streak_counter=1,  # Set initial value
+            last_access_date=datetime.utcnow(),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        db_session.add(new_report)
+        db_session.commit()
 @app.route('/capture', methods=['POST'])
 def capture():
+    global counter_variable
     success, frame = camera.read()
     if not success:
         print("Error: Failed to capture image.")
@@ -553,7 +680,14 @@ def capture():
                     session['captured_image'] = save_path
                     session['dominant_emotion'] = dem_em
 
+                    # If the dominant emotion is 'happy', update the user's report
+                    if dem_em == "happy":
+                        # Assuming you have a session object that provides a database session
+                        db_session = Session()  # Adjust according to your app's db setup
+                        update_user_report(db_session)  # Call the function to update the report
+
                     flash('Image captured and analyzed successfully!', 'success')
+
                     return redirect(url_for('captured'))
 
                 except Exception as e:
@@ -566,9 +700,7 @@ def capture():
     flash('Failed to capture image.', 'error')
     return redirect(url_for('shoot'))
 
-@app.route('/chatbot', methods=['GET','POST'])
-def chatbot():
-    return render_template('chatbot.html')
+
 
 @app.route('/captured')
 def captured():
@@ -584,6 +716,33 @@ def retry():
     flash('You can now retake your image.', 'info')
     return redirect(url_for('shoot'))
 
+
+
+@app.route('/chatbot', methods=['GET','POST'])
+@login_required
+def chatbot():
+    return render_template('chatbot_p.html')
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    global counter_variable
+    user_input = request.json.get('message')
+    response = chat_session.send_message(user_input)
+    model_response = response.text
+
+
+    # Check if the response contains tips
+    if "based on your chat" in model_response.lower():
+        tips = model_response.split('\n')
+        formatted_tips = "<h4>Based on your talk today, here are the tips:</h4>"
+        for i, tip in enumerate(tips, 1):
+            formatted_tips += f"<h5><b>Tip {i}:</b></h5><p>{tip}.</p>"
+
+
+        model_response = formatted_tips
+
+    #counter_variable += 1
+    return jsonify({'response': model_response})
 
 
 if __name__ == '__main__':

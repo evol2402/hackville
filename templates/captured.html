@@ -125,7 +125,6 @@
     <div class="captured-image">
         {% if captured_image %}
             <img src="{{ captured_image }}" alt="Captured Image">
-            <p><strong>Dominant Emotion:</strong> {{ dominant_emotion }}</p>
             <div class="retry-container">
                 <form action="/retry" method="get">
                     <button class="capture-btn">Retake Image</button>

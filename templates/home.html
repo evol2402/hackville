@@ -17,7 +17,17 @@
           <li><a href="#about">About</a></li>
           <li><a href="#features">Facts</a></li>
           <li><a href="#contact">Contact</a></li>
-
+                    <!-- New Streak Item -->
+    {%if logged_in:%}
+      <li class="streak-item">
+    <a href="#streak">
+        <div class="streak-content">
+            <i class="bi bi-trophy-fill"></i>
+            <span id="streak-count">{{ user_streak }}</span> days
+        </div>
+    </a>
+</li>
+{%endif%}
 
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -45,8 +55,14 @@
 
       <div class="container d-flex flex-column justify-content-center align-items-center text-center position-relative" data-aos="zoom-out">
         <img src="static/assets/img/hero-img.png" class="img-fluid animated" alt="">
-        <h1>Welcome to <span> Serenify </span></h1>
+        {% if not logged_in:%}
+         <h1>Welcome to <span> Serenify </span></h1>
         <p>empowering students to strengthen their mental health and achieve academic success with balance and clarity.</p>
+       {%endif%}
+         {% if logged_in:%}
+        <h1>Welcome to <span>Serenify</span>, {{ first_name }}!</h1>
+        <p>Empowering you to strengthen your mental health and achieve academic success with balance, clarity, and personalized support.</p>
+          {%endif%}
         {% if not logged_in:%}
         <div class="d-flex">
      <a href="{{url_for('login')}}" class="btn-get-started scrollto" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background-color: #5e65fb; border-color: #5e65fb;">
@@ -128,13 +144,11 @@
 
       <!-- Right Content -->
       <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-        <p>
-          By integrating features such as personalized study plans and mental wellness resources, the app helps users stay motivated and productive. It bridges the gap between academic success and emotional resilience, fostering a healthier mindset.
-        </p>
-        <a href="#" class="read-more" aria-label="Read more about how the app supports you">
-          <span>Read More</span>
-          <i class="bi bi-arrow-right" aria-hidden="true"></i>
-        </a>
+       <p>
+  By integrating features such as personalized study plans, mental wellness resources, and mindfulness exercises, the app helps users stay motivated, productive, and emotionally balanced. It bridges the gap between academic success and emotional resilience, fostering a healthier mindset. With real-time progress tracking and tailored tips, users can maintain focus while managing stress, leading to both academic achievement and well-being. The app empowers users to prioritize self-care and develop healthy habits for long-term success.
+</p>
+
+
       </div>
 
     </div>

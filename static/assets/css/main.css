@@ -1,15 +1,3 @@
-/**
-* Template Name: Bikin
-* Template URL: https://bootstrapmade.com/bikin-free-simple-landing-page-template/
-* Updated: Aug 07 2024 with Bootstrap v5.3.3
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-
-/*--------------------------------------------------------------
-# Font & Color Variables
-# Help: https://bootstrapmade.com/color-system/
---------------------------------------------------------------*/
 /*custom font*/
 .header-auth-buttons {
   display: flex;
@@ -40,6 +28,30 @@
 }
 
 /*login form*/
+#navmenu .streak-item a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;  /* Ensure equal spacing between the icon and streak count */
+    background-color: #6c63ff;  /* Purple color */
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-weight: bold;
+    color: white;  /* Ensure the text is white for better contrast */
+}
+
+#navmenu .streak-item a i {
+    margin-right: 10px; /* Add some space between the icon and text */
+    color: white;  /* Ensure the icon is white */
+}
+
+#navmenu .streak-item a span {
+    margin-left: 5px; /* Optional: Add some margin between the streak number and "days" text */
+}
+
+#navmenu .streak-item a:hover {
+    background-color: #5a53cc;  /* Darker purple for hover effect */
+    transition: background-color 0.3s ease;
+}
 
 
 
