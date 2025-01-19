@@ -8,7 +8,7 @@
       <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
         <!-- Uncomment the line below if you also wish to use an image logo -->
 <!--         <img src="static/assets/img/logo.png" alt=""> -->
-        <h1 class="sitename">Serenify</h1>
+        <h1 class="sitename" style="padding-left:3rem;">Serenify</h1>
       </a>
 
       <nav id="navmenu" class="navmenu">
@@ -16,19 +16,24 @@
           <li><a href="#hero" class="active">Home</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#features">Facts</a></li>
-
+          <li><a href="#contact">Contact</a></li>
 
 
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+{% if not logged_in%}
+   <div class="header-auth-buttons">
+  <a href="{{url_for('login')}}" class="btn btn-primary login-btn">Login</a>
+  <a href="{{url_for('register')}}" class="btn btn-secondary signup-btn">Sign Up</a>
+</div>
+      {%endif%}
 
-      <div class="header-social-links">
-        <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
-        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+{%if logged_in%}
+       <div class="header-auth-buttons">
+    <a href="{{url_for('logout')}}" class="btn btn-danger logout-btn" style="padding: 10px 20px; background-color: #5e65fb; border-color: #5e65fb;">Logout</a>
       </div>
+      {%endif%}
 
     </div>
   </header>
@@ -42,9 +47,19 @@
         <img src="static/assets/img/hero-img.png" class="img-fluid animated" alt="">
         <h1>Welcome to <span> Serenify </span></h1>
         <p>empowering students to strengthen their mental health and achieve academic success with balance and clarity.</p>
+        {% if not logged_in:%}
+        <div class="d-flex">
+     <a href="{{url_for('login')}}" class="btn-get-started scrollto" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background-color: #5e65fb; border-color: #5e65fb;">
+    <i class="fa fa-lock"></i> Get Started
+</a>
+
+         </div>
+        {%endif%}
+        {%if logged_in%}
         <div class="d-flex">
           <a href="{{url_for('shoot')}}" class="btn-get-started scrollto">Get Started</a>
          </div>
+        {%endif%}
       </div>
 
     </section><!-- /Hero Section -->
@@ -217,13 +232,13 @@
     </section><!-- /Features Section -->
 
 
-   <!-- Faq Section -->
+<!-- Faq Section -->
 <section id="faq" class="faq section">
 
   <!-- Section Title -->
   <div class="container section-title" data-aos="fade-up">
     <h2>Frequently Asked Questions</h2>
-    <p>Get answers to your questions about achieving balance and well-being.</p>
+    <p>Get answers to your questions about using the chatbot and managing your wellness.</p>
   </div><!-- End Section Title -->
 
   <div class="container">
@@ -236,45 +251,45 @@
 
           <div class="faq-item faq-active" data-aos="fade-up" data-aos-delay="200">
             <i class="faq-icon bi bi-question-circle"></i>
-            <h3>How can this app help improve my mental well-being?</h3>
+            <h3>What is the purpose of the 2-minute daily chat with the chatbot?</h3>
             <div class="faq-content">
-              <p>Our app provides tailored exercises, mindfulness practices, and relaxation techniques that support mental clarity and reduce stress, helping you cultivate a positive mindset.</p>
+              <p>The purpose is to provide students with a safe and quick outlet to talk about their day, express their feelings, and receive helpful tips and solutions. This helps reduce mental pressure and encourages better wellness management.</p>
             </div>
             <i class="faq-toggle bi bi-chevron-right"></i>
           </div><!-- End Faq item-->
 
           <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
             <i class="faq-icon bi bi-question-circle"></i>
-            <h3>What types of exercises can I do using the app?</h3>
+            <h3>How can this chatbot help with managing stress and anxiety?</h3>
             <div class="faq-content">
-              <p>We offer a variety of exercises, including breathing techniques, guided meditations, yoga sequences, and mood-boosting challenges, all designed to promote relaxation and mental clarity.</p>
+              <p>The chatbot is designed to listen to your concerns and offer practical advice on managing stress, such as breathing exercises, time management tips, and ways to prioritize tasks. It provides personalized support to help you feel more in control.</p>
             </div>
             <i class="faq-toggle bi bi-chevron-right"></i>
           </div><!-- End Faq item-->
 
           <div class="faq-item" data-aos="fade-up" data-aos-delay="400">
             <i class="faq-icon bi bi-question-circle"></i>
-            <h3>Are the relaxation techniques suitable for beginners?</h3>
+            <h3>Is the chatbot available 24/7?</h3>
             <div class="faq-content">
-              <p>Yes! Our relaxation techniques are beginner-friendly, with simple steps that guide you toward creating moments of peace, whether you're new to mindfulness or have prior experience.</p>
+              <p>Yes, the chatbot is available at any time of day or night, allowing you to have a conversation whenever you need it, even outside of normal school hours.</p>
             </div>
             <i class="faq-toggle bi bi-chevron-right"></i>
           </div><!-- End Faq item-->
 
           <div class="faq-item" data-aos="fade-up" data-aos-delay="500">
             <i class="faq-icon bi bi-question-circle"></i>
-            <h3>Can I personalize my wellness journey in the app?</h3>
+            <h3>Will the chatbot replace talking to a counselor or therapist?</h3>
             <div class="faq-content">
-              <p>Absolutely! The app allows you to personalize your wellness plan by choosing your focus areas, whether it's stress relief, focus enhancement, or overall emotional balance.</p>
+              <p>The chatbot is not meant to replace professional counseling or therapy but serves as a complementary tool. It offers immediate support, resources, and coping strategies, while professional help can provide more in-depth treatment for mental health concerns.</p>
             </div>
             <i class="faq-toggle bi bi-chevron-right"></i>
           </div><!-- End Faq item-->
 
           <div class="faq-item" data-aos="fade-up" data-aos-delay="600">
             <i class="faq-icon bi bi-question-circle"></i>
-            <h3>How can I track my progress in the app?</h3>
+            <h3>How do I start a conversation with the chatbot?</h3>
             <div class="faq-content">
-              <p>The app offers tools to track your mood, activities, and milestones, helping you stay motivated and see improvements over time, reinforcing a sense of accomplishment.</p>
+              <p>Simply log in to the platform, navigate to the chatbot section, and begin by typing or speaking about your day. The chatbot will guide you through the conversation and provide useful tips based on your input.</p>
             </div>
             <i class="faq-toggle bi bi-chevron-right"></i>
           </div><!-- End Faq item-->
@@ -288,6 +303,100 @@
   </div>
 
 </section><!-- /Faq Section -->
+
+      <!-- Contact Section -->
+    <section id="contact" class="contact section light-background">
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Contact</h2>
+        <p>We are here to help you! Feel free to reach out to us with any questions or feedback.</p>
+    </div><!-- End Section Title -->
+
+    <div class="container" data-aos="fade" data-aos-delay="100">
+        <div class="row gy-4">
+            <!-- Interesting Facts Section -->
+            <div class="col-lg-4">
+                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
+                    <i class="bi bi-emoji-smile flex-shrink-0"></i>
+                    <div>
+                        <h3>Interesting Fact #1</h3>
+                        <p>Did you know? Our app helps you achieve wellness goals with ease.</p>
+                    </div>
+                </div><!-- End Info Item -->
+
+                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <i class="bi bi-lightbulb flex-shrink-0"></i>
+                    <div>
+                        <h3>Interesting Fact #2</h3>
+                        <p>We use the latest technology to ensure a seamless user experience.</p>
+                    </div>
+                </div><!-- End Info Item -->
+
+                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+                    <i class="bi bi-bar-chart flex-shrink-0"></i>
+                    <div>
+                        <h3>Interesting Fact #3</h3>
+                        <p>Our app offers personalized tips to boost your mental health.</p>
+                    </div>
+                </div><!-- End Info Item -->
+            </div>
+
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                 <!-- Flash Messages -->
+             <!-- Display Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-3">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+                <form method="POST" action="{{ url_for('submit') }}"  data-aos="fade-up" data-aos-delay="200">
+                    <!-- Flask-WTF Form Handling -->
+                    {{ form.hidden_tag() }}
+                    <div class="row gy-4">
+                        <!-- Name -->
+                        <div class="col-md-6">
+                            {{ form.name(class="form-control", placeholder="Your Name") }}
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            {{ form.email(class="form-control", placeholder="Your Email") }}
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="col-md-12">
+                            {{ form.subject(class="form-control", placeholder="Subject") }}
+                        </div>
+
+                        <!-- Message -->
+                        <div class="col-md-12">
+                            {{ form.message(class="form-control", placeholder="Message", rows="6") }}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="col-md-12 text-center">
+
+
+
+                           {{ form.submit(class="btn btn-primary", style="background-color: #5e65fb; border-color: #5e65fb;") }}
+
+                        </div>
+                    </div>
+                </form>
+            </div><!-- End Contact Form -->
+        </div>
+    </div>
+</section>
+<!-- /Contact Section -->
 
   </main>
 {% include 'footer.html' %}
