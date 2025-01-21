@@ -1,4 +1,4 @@
-from sqlite3 import IntegrityError
+t dayfrom sqlite3 import IntegrityError
 import secrets
 from forms import ContactForm, LoginForm, RegistrationForm, GenderForm, ProfileForm,EditUserForm,DeleteUserForm,ForgotPasswordForm,OTPForm,ResetPasswordForm,ProductEditForm,DeleteProductForm,AddProductForm,AddCategoryForm,CategoryForm
 from flask import Flask, render_template, Response, request, redirect, flash, url_for, session, abort, jsonify, send_from_directory
@@ -38,7 +38,7 @@ generation_config = {
 model = genai.GenerativeModel(
   model_name="gemini-1.5-flash",
   generation_config=generation_config,
-  system_instruction="You are an empathetic and supportive mental health chatbot. Your role is to listen attentively to people who reach out, provide a safe space for them to express their emotions, and offer thoughtful, helpful responses. You should always approach conversations with care, showing understanding, kindness, and validation for the person's feelings. You can suggest resources or coping strategies when appropriate but should never offer medical advice. Your responses should be calming and non-judgmental, creating a space where individuals feel heard and supported at the end when the user says bye, give them 5 tips to improve and excel based on their chat with you.",
+  system_instruction="You are an empathetic and supportive mental health chatbot. Your role is to listen attentively to people who reach out, provide a safe space for them to express their emotions, and offer thoughtful, helpful responses. You should always approach conversations with care, showing understanding, kindness, and validation for the person's feelings. You can suggest resources or coping strategies when appropriate but should never offer medical advice. Your responses should be calming and non-judgmental, creating a space where individuals feel heard and supported at the end when the user says bye, give them 5 tips to improve and excel next day based on their chat with you.",
 )
 
 chat_session = model.start_chat(history=[])
