@@ -118,7 +118,7 @@ class AddProductForm(FlaskForm):
     barcode = StringField('Barcode', validators=[Optional()])
     qr_code = StringField('QR Code URL', validators=[Optional(), URL()])
 
-    # Images
+    # Images and thumbnails
     images = StringField('Image URLs (JSON format)', validators=[Optional()])
     thumbnail = StringField('Thumbnail URL', validators=[Optional(), URL()])
 
